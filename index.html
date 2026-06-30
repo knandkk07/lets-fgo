@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="app-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-title" content="" />
+    <meta name="application-name" content="" />
+    <title></title>
+    <!--
+      Meta Pixel：
+      - Pixel ID 仍从 /api/app/public/download-info 拉取（兼容 Vue 独立访问场景）。
+      - 当本页被 SSR 外壳通过 iframe 嵌入（?from=shell）时，外壳已经在父文档发过
+        PageView/ViewContent 并已发服务端 CAPI，本页只做 fbq init（供后续 Download
+        等转化事件复用），不再重复 track 初始事件，避免双重计数。
+    -->
+    <script>
+      !(function(f,b,e,v,n,t,s){
+        if(f.fbq)return;
+        n=f.fbq=function(){
+          n.callMethod ?
+            n.callMethod.apply(n,arguments) :
+            n.queue.push(arguments)
+        };
+        if(!f._fbq)f._fbq=n;
+        n.push=n;
+        n.loaded=!0;
+        n.version='2.0';
+        n.queue=[];
+        t=b.createElement(e);
+        t.async=!0;
+        t.src=v;
+        s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s);
+      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+      // (function() {
+      //   var params = new URLSearchParams(window.location.search);
+      //   var inviteCode = params.get('c') || params.get('inviteCode') || '';
+      //   var fromShell = params.get('from') === 'shell';
+      //   var apiParams = new URLSearchParams();
+      //   if (inviteCode) apiParams.set('inviteCode', inviteCode);
+      //   apiParams.set('domain', window.location.host || window.location.hostname);
+      //   apiParams.set('origin', window.location.origin);
+      // 
+      //   fetch('/api/app/public/download-info?' + apiParams.toString())
+      //     .then(function(res) { return res.json(); })
+      //     .then(function(res) {
+      //       var data = res && res.data ? res.data : {};
+      //       var pixelId = String(data.fbPixelId || '').trim();
+      //       if (!pixelId || data.fbPixelEnabled === false) return;
+      //       window.__STATIC_FB_PIXEL_ID__ = pixelId;
+      //       // 标记初始 PageView 已上报：来自外壳时不再重发，避免与父文档/CAPI 重复。
+      //       window.__STATIC_FB_PIXEL_PAGEVIEW_SENT__ = true;
+      //       fbq('init', pixelId);
+      //       if (fromShell) return;
+      //       fbq('track', data.fbOpenEvent || 'PageView');
+      //     })
+      //     .catch(function() {});
+      // })();
+    </script>
+    <!-- End Meta Pixel Code -->
+
+    <!--
+      当被 SSR 外壳的 iframe 嵌入时（window.parent !== window），把 Vue 当前 title
+      通过 postMessage 透传给外壳，外壳的 message 监听会用它替换 <title>。
+      用 MutationObserver 监听 <title> 子节点变化：Vue Router 改 document.title
+      时立刻同步给外壳，外壳 tab 永远跟着 Vue 当前页走。
+    -->
+    <script>
+      (function () {
+        if (typeof window === 'undefined' || window.parent === window) return;
+        var post = function () {
+          try {
+            var t = (document.title || '').trim();
+            if (!t) return;
+            window.parent.postMessage({ title: t }, '*');
+          } catch (e) { /* ignore */ }
+        };
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', post);
+        } else {
+          post();
+        }
+        var titleEl = document.querySelector('head > title');
+        if (titleEl && typeof MutationObserver !== 'undefined') {
+          new MutationObserver(post).observe(titleEl, { childList: true });
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="assets/index-CV5e7xWt.js"></script>
+    <link rel="modulepreload" crossorigin href="assets/_plugin-vue_export-helper-B67ILkmu.js">
+    <link rel="modulepreload" crossorigin href="assets/rolldown-runtime-lhHHWwHU.js">
+    <link rel="modulepreload" crossorigin href="assets/runtime-core.esm-bundler-z3w5jS40.js">
+    <link rel="modulepreload" crossorigin href="assets/nativeBridge-CT_R7Q7P.js">
+    <link rel="modulepreload" crossorigin href="assets/index-CV5e7xWt.js">
+    <link rel="modulepreload" crossorigin href="assets/appDownload-DrViy96O.js">
+    <link rel="stylesheet" crossorigin href="assets/index-DPEsTjqy.css">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
