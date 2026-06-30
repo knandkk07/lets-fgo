@@ -1,0 +1,1 @@
+import{p as e}from"./index-CV5e7xWt.js";var t=()=>e.get(`/card/getCardPublic`);export{t};
