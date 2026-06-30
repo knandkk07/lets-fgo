@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
+    <script>
+      (function() {
+        var base = document.createElement('base');
+        var path = window.location.pathname;
+        if (path.indexOf('/lets-fgo') === 0) {
+          base.href = '/lets-fgo/';
+        } else {
+          base.href = '/';
+        }
+        document.head.appendChild(base);
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="app-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
